@@ -1,0 +1,14 @@
+{
+  "name": "omnilert-plugins",
+  "description": "Omnilert Labs Claude Code plugin marketplace",
+  "owner": { "name": "Omnilert Labs" },
+  "plugins": [
+    {
+      "name": "agent-wiki",
+      "description": "Standardized agent-maintained wiki (Ingest/Query/Lint).",
+      "version": "0.2.7",
+      "source": "./",
+      "author": { "name": "Omnilert Labs" }
+    }
+  ]
+}

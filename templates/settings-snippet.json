@@ -1,0 +1,6 @@
+{
+  "_comment": "Reference only. MERGE the enabledPlugins entry below into your existing .claude/settings.json — preserve every other key and any other enabled plugins; NEVER overwrite the file. enabledPlugins is an OBJECT (name -> true), not an array.",
+  "enabledPlugins": {
+    "agent-wiki@omnilert-plugins": true
+  }
+}
