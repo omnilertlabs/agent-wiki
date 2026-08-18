@@ -123,7 +123,8 @@ Add one step:
 
 ## Publishing a new version (maintainers)
 Edit the plugin, bump `version` in `.claude-plugin/plugin.json`,
-`.claude-plugin/marketplace.json`, and `gemini-extension.json`, open a PR, and merge.
+`.claude-plugin/marketplace.json`, and `gemini-extension.json`, add a CHANGELOG.md entry
+(lead with upgrade impact — new or changed lint failures), open a PR, and merge.
 Consumers then pick it up with the three commands in "Update an installed plugin" above
 (Gemini users just `git pull` their linked clone).
 
