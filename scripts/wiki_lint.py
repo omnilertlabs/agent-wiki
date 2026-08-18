@@ -1,6 +1,7 @@
 """Generic structural linter for an agent-wiki (.claude/wiki/).
 
 Derives all checks from wiki content; no repo-specific configuration.
+Behavior contract for ports (Go/Node): see CONFORMANCE.md at the repo root.
 """
 import argparse
 import re
@@ -41,18 +42,43 @@ def extract_code_refs(text):
         if path.startswith(("/", "~")) or "<" in path or ">" in path or " " in path:
             continue
         last = path.split("/")[-1]
+        # A dotted symbol (`Type.Method`) also ends in ".Word" but has no "/", so the
+        # "/" requirement below skips it. Deliberate: symbol resolution needs language
+        # awareness this linter doesn't have (CONFORMANCE.md ruling 7).
         if "/" in path and re.search(r"\.[A-Za-z0-9]+$", last):
             refs.append(path)
     return refs
+
+
+# Infrastructure files: not topic pages, never declared in the index as pages,
+# but always valid link targets (CONFORMANCE.md ruling 4).
+_SPECIAL_FILES = ("index.md", "log.md", "log-archive.md")
 
 
 def parse_index(index_text):
     pages = set()
     for target in extract_md_links(index_text):
         target = target.split("#")[0]
-        if target.endswith(".md") and "/" not in target and "://" not in target:
+        if (target.endswith(".md") and "/" not in target and "://" not in target
+                and target not in _SPECIAL_FILES):
             pages.add(target)
     return pages
+
+
+def check_index_targets(index_text):
+    """Flag local .md index targets that are not bare filenames.
+
+    In the flat standard every page target is bare; a slash-bearing target was
+    previously discarded silently and checked by nothing (CONFORMANCE.md ruling 6).
+    """
+    issues = []
+    targets = {t.split("#")[0] for t in extract_md_links(index_text)}
+    for target in sorted(targets):
+        if target.endswith(".md") and "://" not in target and "/" in target:
+            issues.append(Issue("error", "index-target-not-bare",
+                                f"index.md links to {target}; page targets must be "
+                                f"bare filenames in the flat wiki dir"))
+    return issues
 
 
 def find_pages(wiki_dir):
@@ -85,7 +111,7 @@ def _local_md_targets(text):
 
 def check_broken_links(wiki_dir, on_disk):
     issues = []
-    valid = on_disk | {"index.md", "log.md"}
+    valid = on_disk | set(_SPECIAL_FILES)
     for name in sorted(on_disk):
         text = (Path(wiki_dir) / name).read_text()
         for t in sorted(_local_md_targets(text)):
@@ -117,7 +143,10 @@ def check_code_refs(wiki_dir, on_disk, repo_root):
     return issues
 
 
-_LOG_ENTRY_RE = re.compile(r"^## \[(\d{4}-\d{2}-\d{2})\] (\w+) \| (.+)$")
+# ASCII by design: dates are ISO-8601 ASCII digits, ops come from the fixed ASCII set
+# below. Python's Unicode \d/\w previously (mis)accepted e.g. Arabic-Indic digit dates
+# that conforming ports reject (CONFORMANCE.md ruling 2).
+_LOG_ENTRY_RE = re.compile(r"^## \[([0-9]{4}-[0-9]{2}-[0-9]{2})\] ([a-z]+) \| (.+)$")
 _LOG_OPS = {"ingest", "query", "supersede", "migrate", "compact"}
 _LOG_SUBJECT_MAX = 80
 _LOG_SIZE_MAX = 200
@@ -137,7 +166,12 @@ def check_log_discipline(log_text, label="log.md", check_size=True):
     prev_date = None
     entry_count = 0
     in_comment = False
-    for n, line in enumerate(log_text.splitlines(), 1):
+    # Lines terminate at LF, with one immediately preceding CR stripped (CRLF).
+    # Other control characters (FF, VT, NEL, LS, PS, ...) have no structural meaning
+    # and may appear inside a subject — do NOT use splitlines(), which breaks on nine
+    # separators and rejected in-spec input (CONFORMANCE.md ruling 1).
+    for n, line in enumerate(log_text.split("\n"), 1):
+        line = line.removesuffix("\r")
         stripped = line.strip()
         if in_comment:
             if "-->" in stripped:
@@ -167,6 +201,7 @@ def check_log_discipline(log_text, label="log.md", check_size=True):
             issues.append(Issue("error", "log-order",
                                 f"{label} line {n}: date {date} precedes previous {prev_date}"))
         prev_date = date
+        # Length in Unicode code points, not bytes (Go ports: RuneCountInString).
         if len(subject) > _LOG_SUBJECT_MAX:
             issues.append(Issue("warning", "log-subject",
                                 f"{label} line {n}: subject exceeds {_LOG_SUBJECT_MAX} chars "
@@ -198,7 +233,15 @@ def lint(wiki_dir, repo_root, memory_file=None):
     declared = parse_index(index_text)
 
     issues = []
+    nested = sorted(str(p.relative_to(wiki)) for p in wiki.rglob("*.md")
+                    if p.parent != wiki)
+    if nested:
+        shown = ", ".join(nested[:5]) + (", ..." if len(nested) > 5 else "")
+        issues.append(Issue("error", "nested-pages",
+                            f"{len(nested)} .md file(s) in subdirectories ({shown}); "
+                            "the wiki is flat by design — see PROTOCOL.md"))
     issues += check_index_disk(declared, on_disk)
+    issues += check_index_targets(index_text)
     issues += check_broken_links(wiki_dir, on_disk)
     issues += find_orphans(wiki_dir, on_disk, index_text)
     issues += check_code_refs(wiki_dir, on_disk, repo_root)

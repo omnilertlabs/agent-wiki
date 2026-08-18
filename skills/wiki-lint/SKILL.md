@@ -14,6 +14,9 @@ Report the errors and warnings verbatim. Errors must be fixed before release.
 Read every wiki page and assess:
 - Gaps: topics referenced across pages but lacking a dedicated page.
 - Staleness: claims that contradict current code (spot-check with grep/read).
+- Contradictions — WITHIN a page and ACROSS pages: run the wiki-compact `reconcile`
+  procedure (see PROTOCOL.md); reconcile is the delivery mechanism for this check.
+  A deep lint that skips it is incomplete.
 - Oversized pages that should be split.
 - Knowledge stored outside the wiki: scan `.claude/agents/*` persona files, stray
   memory/notes files, AND the per-project auto-memory at

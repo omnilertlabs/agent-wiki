@@ -8,6 +8,7 @@ marketplace, so all repos stay on one method with no drift.
 ## What you get
 - `PROTOCOL.md` — the method (readable by any agent, CC or not).
 - `wiki_lint.py` — the only script: a generic structural linter (CI-able).
+- `CONFORMANCE.md` — the linter's behavior contract, for ports to other languages.
 - Skills + slash commands: `/wiki-init`, `/wiki-ingest`, `/wiki-query`,
   `/wiki-lint`, `/wiki-migrate`, `/wiki-compact` (or just ask in plain language).
 - A SessionStart hook that injects knowledge-routing rules every session.
