@@ -109,6 +109,9 @@ Trigger: wiki_lint reports `log-size`, or facts have drifted into conflict. Run 
 
 ## Page format
 Dense, structured, token-efficient markdown. Cross-link related pages. Not prose.
+Backticked repo-relative paths are validated (dead-code-ref), so write illustrative or
+made-up example paths with `<placeholder>` segments — the linter skips those by design;
+a realistic-looking fake path fires the check from the page that defines it.
 
 ## Reproducible procedures (configs, runs, benchmarks)
 When a page documents something an agent will RE-RUN (env vars, CLI flags, per-dataset inputs,

@@ -42,6 +42,9 @@ first.
 - `PROTOCOL.md`: a completed Tier 2 sweep records itself as a `query` log
   line, so "when was this wiki last swept" has a positive answer; findings
   whose fix is deferred route to the team's work tracker, not the wiki.
+- `PROTOCOL.md` page format: write illustrative example paths with
+  `<placeholder>` segments — a realistic-looking fake path fires
+  `dead-code-ref` from the very page that uses it as an example.
 
 ### Changed
 
