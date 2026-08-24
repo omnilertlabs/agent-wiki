@@ -308,6 +308,29 @@ def test_nested_pages_flagged(tmp_path):
     assert any("bugs/b1.md" in i.message for i in issues)
 
 
+def test_lone_cr_is_not_a_terminator_at_file_level(tmp_path):
+    # Ruling 1 is end-to-end: the read layer must not translate newlines. Through
+    # 0.2.8 a universal-newlines read turned "a\rb\r" into two lines at the CLI
+    # (two log-body errors) while the checker saw one line.
+    wiki = tmp_path / "wiki"
+    wiki.mkdir()
+    (wiki / "index.md").write_text("# I\n")
+    (wiki / "log.md").write_bytes(b"# Log\n\nstray one\rstray two\r")
+    codes = [i.code for i in wl.lint(str(wiki), str(tmp_path))]
+    assert codes == ["log-body"]
+
+
+def test_eof_bare_cr_stripped_at_file_level(tmp_path):
+    # Ruling 1: a line terminates at LF or end-of-input; one CR immediately
+    # preceding the terminator is stripped — so 80 code points + EOF bare CR is
+    # clean, not an 81-length log-subject.
+    wiki = tmp_path / "wiki"
+    wiki.mkdir()
+    (wiki / "index.md").write_text("# I\n")
+    (wiki / "log.md").write_bytes(b"# Log\n\n## [2026-06-12] ingest | " + b"x" * 80 + b"\r")
+    assert wl.lint(str(wiki), str(tmp_path)) == []
+
+
 def test_index_target_not_bare_flagged():
     # Ruling 6: a slash-bearing local .md index target used to be silently
     # discarded and checked by nothing.

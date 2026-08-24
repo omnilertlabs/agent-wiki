@@ -1,6 +1,28 @@
 # Changelog
 
-## 0.2.8 — unreleased
+## 0.2.9 — unreleased
+
+Conformance follow-ups from port testing (found by a downstream Node port).
+
+### Fixed
+
+- **The CLI no longer treats a lone CR as a line terminator.** Log files are
+  now read byte-preserving (`newline=""`); through 0.2.8, Python's default
+  universal-newlines read translated a lone `\r` to `\n` before the checker
+  ran, so the CLI reported one `log-body` error per CR-separated fragment
+  while the checker itself — correctly, per CONFORMANCE ruling 1 — saw one
+  line. Byte-verbatim ports were already conforming.
+
+### Changed
+
+- CONFORMANCE ruling 1 wording amended to match intended (and reference)
+  behavior: a line terminates at LF **or at end-of-input**, and one CR
+  immediately preceding the terminator is stripped — so a final unterminated
+  line ending in a bare CR does not count that CR toward the subject length.
+  The read layer is explicitly inside the contract.
+- Stamped the 0.2.8 release date below (it shipped reading "unreleased").
+
+## 0.2.8 — 2026-08-24
 
 Linter behavior release: aligns `wiki_lint.py` with the new `CONFORMANCE.md`
 contract written for the ports of the linter to other languages. Some wikis

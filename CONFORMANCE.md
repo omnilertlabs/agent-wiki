@@ -21,12 +21,24 @@ divergences from in-flight Go and Node ports.
 ## Rulings
 
 ### 1. Line termination — LF, with CRLF tolerance
-A log line terminates at `\n`; one immediately preceding `\r` is stripped. No
-other character is a line terminator. Control characters (FF, VT, FS, GS, RS,
-NEL, LS, PS) have no structural meaning and may appear inside a subject.
-*History:* the reference used Python `splitlines()` (nine separators) and
-rejected e.g. a form feed inside a subject; that behavior was incidental and is
-removed. Ports must not implement the nine-separator splitter.
+A log line terminates at `\n` **or at end-of-input**; one `\r` immediately
+preceding the terminator is stripped (so a final unterminated line ending in a
+bare CR loses that CR — it does not count toward the subject length). No other
+character is a line terminator: a lone CR mid-line is subject content, as are
+FF, VT, FS, GS, RS, NEL, LS, PS.
+
+**The read layer is inside this contract.** Conformance is measured on the
+linter's observable behavior over FILE BYTES, so an implementation must not let
+its I/O layer translate newlines before the checker runs. The reference opens
+log files with `newline=""` (no translation); through 0.2.8 its CLI used
+Python's default universal-newlines read, which turned a lone CR into a line
+terminator at the file level while the checker itself did not (a
+`"a\rb\r"` log body produced two `log-body` errors at the CLI, one from the
+checker — fixed in 0.2.9; byte-verbatim ports were right).
+*History:* the reference used Python `splitlines()` (nine separators) through
+0.2.7 and rejected e.g. a form feed inside a subject; that behavior was
+incidental and is removed. Ports must not implement the nine-separator
+splitter.
 
 ### 2. Log-entry grammar — ASCII by design
 `## [YYYY-MM-DD] <op> | <subject>` where the date is ASCII `[0-9]`, the op is
