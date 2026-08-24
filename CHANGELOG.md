@@ -1,6 +1,11 @@
 # Changelog
 
-## 0.2.9 — unreleased
+<!-- Merge to main is the release, so version headers carry no dates: a release's date
+     is derivable on demand from git (the merge commit of its version-bump PR, e.g.
+     `git log --merges --oneline -- .claude-plugin/plugin.json`). A stored date can't
+     be known before the merge lands and goes stale if it slips. -->
+
+## 0.2.9
 
 Conformance follow-ups from port testing (found by a downstream Node port).
 
@@ -40,9 +45,13 @@ Conformance follow-ups from port testing (found by a downstream Node port).
   immediately preceding the terminator is stripped — so a final unterminated
   line ending in a bare CR does not count that CR toward the subject length.
   The read layer is explicitly inside the contract.
-- Stamped the 0.2.8 release date below (it shipped reading "unreleased").
+- Changelog version headers no longer carry dates or "unreleased" markers:
+  merge-is-release means the date is unknowable before landing and stale
+  after slipping (0.2.8 shipped reading "unreleased"). Per this release's own
+  Figures rule, the date is derive-on-demand — the header comment states the
+  git derivation.
 
-## 0.2.8 — 2026-08-24
+## 0.2.8
 
 Linter behavior release: aligns `wiki_lint.py` with the new `CONFORMANCE.md`
 contract written for the ports of the linter to other languages. Some wikis
@@ -96,6 +105,6 @@ first.
 - Documented (no Python behavior change): the 80-char `log-subject` limit is
   measured in Unicode code points, not bytes.
 
-## 0.2.7 — 2026-08-17
+## 0.2.7
 
 Initial public release.
