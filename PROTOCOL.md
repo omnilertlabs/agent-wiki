@@ -79,8 +79,10 @@ possibly-stale local copy.
 
 ### Lint — verify integrity
 Tier 1 (deterministic): run `python3 scripts/wiki_lint.py --wiki .claude/wiki --repo .`.
-Errors: undeclared-page, dangling-index-entry, broken-wiki-link, log-body, log-order,
-log-op. Warnings: orphan-page, dead-code-ref, log-subject, log-size, memory-bloat.
+Errors: undeclared-page, dangling-index-entry, index-target-not-bare, broken-wiki-link,
+nested-pages, log-body, log-order, log-op. Warnings: orphan-page, dead-code-ref,
+log-subject, log-size, memory-bloat. Tier 1 never writes anything — it is the exit gate
+inside mutating ops and runs in CI. Ports of the linter follow CONFORMANCE.md.
 Tier 2 (agentic, on request): gaps (topics lacking a page), staleness vs code,
 oversized pages, cross-page contradictions (delivered by the wiki-compact `reconcile` sweep),
 knowledge stored outside the wiki (`.claude/agents/*` personas, stray
@@ -89,6 +91,10 @@ memory/notes files, or the per-project auto-memory at `~/.claude/projects/<ENCOD
 **leading `-`**; compute it as `~/.claude/projects/$(pwd | sed 's#[/_]#-#g')/memory`. Domain
 facts there belong in the wiki; personas reference it and `user_*`/`feedback_*` preference
 memory stays), and — rarely — extending wiki_lint.py with a new check kind.
+A completed Tier 2 sweep records itself as a `query` log line (e.g.
+`## [YYYY-MM-DD] query | tier2 deep lint — N findings`) so sweep recency is answerable;
+any fixes the sweep makes log additionally as their own ops. Findings whose fix is
+genuinely deferred route to the team's work tracker — the wiki holds knowledge, not tasks.
 
 ### Compact & reconcile (agentic) — keep memory lean
 Trigger: wiki_lint reports `log-size`, or facts have drifted into conflict. Run the
@@ -103,6 +109,9 @@ Trigger: wiki_lint reports `log-size`, or facts have drifted into conflict. Run 
 
 ## Page format
 Dense, structured, token-efficient markdown. Cross-link related pages. Not prose.
+Backticked repo-relative paths are validated (dead-code-ref), so write illustrative or
+made-up example paths with `<placeholder>` segments — the linter skips those by design;
+a realistic-looking fake path fires the check from the page that defines it.
 
 ## Reproducible procedures (configs, runs, benchmarks)
 When a page documents something an agent will RE-RUN (env vars, CLI flags, per-dataset inputs,

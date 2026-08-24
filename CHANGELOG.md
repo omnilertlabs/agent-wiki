@@ -1,0 +1,59 @@
+# Changelog
+
+## 0.2.8 — unreleased
+
+Linter behavior release: aligns `wiki_lint.py` with the new `CONFORMANCE.md`
+contract written for the ports of the linter to other languages. Some wikis
+that passed under 0.2.7 will fail under 0.2.8 — the new failures are listed
+first.
+
+### Upgrade impact — new ERRORs you may see
+
+- **`nested-pages`** (new check): any `.md` file in a subdirectory of
+  `.claude/wiki/` is now an ERROR. Previously a nested wiki was silently
+  half-inspected (nested pages skipped entirely) while reporting misleading
+  errors. The standard is flat by design; fix by prefix-flattening
+  (`bugs/foo.md` → `bugs-foo.md`) with the index table carrying the grouping.
+- **`index-target-not-bare`** (new check): a local `.md` link target in
+  `index.md` that contains `/` is now an ERROR. Previously such targets were
+  silently discarded and validated by nothing.
+- **Unicode digits in log dates are now rejected.** `## [YYYY-MM-DD] ...`
+  requires ASCII `[0-9]`; a date written with e.g. Arabic-Indic digits
+  previously passed by accident (Python's Unicode `\d`) and now fails as
+  `log-body`.
+
+### Fixed — false errors removed
+
+- Linking to `log-archive.md` from any page no longer reports a false
+  `broken-wiki-link`; an `index.md` link to `log.md` or `log-archive.md` no
+  longer reports a false `dangling-index-entry`. These files are
+  infrastructure: always valid link targets, never page declarations.
+- A form feed (or other non-LF control character) inside a log subject no
+  longer rejects the log. Lines terminate at LF (CRLF tolerated); other
+  control characters have no structural meaning.
+
+### Added
+
+- `CONFORMANCE.md` — the linter's behavior contract for ports (Go/Node in
+  progress), including the in-spec/out-of-spec matching rules.
+- `wiki-lint` skill: the Tier 2 checklist gains the contradiction check
+  (within-page and cross-page), delegating to the `wiki-compact` reconcile
+  procedure — `PROTOCOL.md` listed it but the skill omitted it.
+- `PROTOCOL.md`: a completed Tier 2 sweep records itself as a `query` log
+  line, so "when was this wiki last swept" has a positive answer; findings
+  whose fix is deferred route to the team's work tracker, not the wiki.
+- `PROTOCOL.md` page format: write illustrative example paths with
+  `<placeholder>` segments — a realistic-looking fake path fires
+  `dead-code-ref` from the very page that uses it as an example.
+
+### Changed
+
+- Log-entry grammar is ASCII by design (`[0-9]` dates, `[a-z]` ops). A
+  non-lowercase op (e.g. `Ingest`) now fails as `log-body` instead of
+  `log-op` — still an ERROR either way.
+- Documented (no Python behavior change): the 80-char `log-subject` limit is
+  measured in Unicode code points, not bytes.
+
+## 0.2.7 — 2026-08-17
+
+Initial public release.

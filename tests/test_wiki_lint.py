@@ -241,3 +241,76 @@ def test_lint_checks_log_archive(tmp_path):
     (wiki / "log-archive.md").write_text("# Archive\n\nstray body line\n")
     codes = {i.code for i in wl.lint(str(wiki), str(tmp_path))}
     assert "log-body" in codes
+
+
+# --- CONFORMANCE.md rulings (2026-08-18) ---
+
+def test_log_entry_rejects_unicode_digit_date():
+    # Ruling 2: ISO dates are ASCII. Python's \d used to accept Arabic-Indic digits,
+    # silently PASSING a log that conforming ports reject.
+    log = "# Log\n\n## [٢٠٢٦-٠٦-١٢] ingest | unicode date\n"
+    codes = [(i.code, i.severity) for i in wl.check_log_discipline(log)]
+    assert codes == [("log-body", "error")]
+
+
+def test_form_feed_inside_line_is_subject_content():
+    # Ruling 1: control chars other than the LF terminator have no structural
+    # meaning. splitlines() used to split here and flag the fragment as log-body.
+    log = "# Log\n\n## [2026-06-12] ingest | part one\fpart two\n"
+    assert wl.check_log_discipline(log) == []
+
+
+def test_crlf_line_endings_accepted():
+    log = "# Log\r\n\r\n## [2026-06-12] ingest | a\r\n## [2026-06-13] query | b\r\n"
+    assert wl.check_log_discipline(log) == []
+
+
+def test_exotic_separators_do_not_break_lines():
+    for sep in ("\v", "\x1c", "\x1d", "\x1e", "\u0085", "\u2028", "\u2029"):
+        log = f"# Log\n\n## [2026-06-12] ingest | a{sep}b\n"
+        assert wl.check_log_discipline(log) == [], repr(sep)
+
+
+def test_subject_length_counts_code_points():
+    # Ruling 3: 80 multibyte runes is exactly at the limit — code points, not bytes.
+    log = "# Log\n\n## [2026-06-12] ingest | " + "é" * 80 + "\n"
+    assert wl.check_log_discipline(log) == []
+
+
+def test_link_to_log_archive_is_valid(tmp_path):
+    # Ruling 4: special files are always valid link targets.
+    (tmp_path / "arch.md").write_text("see [archive](log-archive.md)")
+    assert wl.check_broken_links(str(tmp_path), {"arch.md"}) == []
+
+
+def test_index_linking_special_files_not_dangling(tmp_path):
+    # Ruling 4: an index link to log.md / log-archive.md is navigation, not a
+    # page declaration — must not produce dangling-index-entry.
+    wiki = tmp_path / "wiki"
+    wiki.mkdir()
+    (wiki / "index.md").write_text(
+        "| [Arch](arch.md) | x |\n[log](log.md) [archive](log-archive.md)\n")
+    (wiki / "log.md").write_text("# Log\n")
+    (wiki / "log-archive.md").write_text("# Wiki Operation Log (archive)\n")
+    (wiki / "arch.md").write_text("see [Index](index.md)")
+    assert wl.lint(str(wiki), str(tmp_path)) == []
+
+
+def test_nested_pages_flagged(tmp_path):
+    # Ruling 5: a nested wiki must be diagnosed, not silently half-inspected.
+    wiki = tmp_path / "wiki"
+    (wiki / "bugs").mkdir(parents=True)
+    (wiki / "index.md").write_text("# I\n")
+    (wiki / "log.md").write_text("# Log\n")
+    (wiki / "bugs" / "b1.md").write_text("nested page")
+    issues = wl.lint(str(wiki), str(tmp_path))
+    assert ("nested-pages", "error") in {(i.code, i.severity) for i in issues}
+    assert any("bugs/b1.md" in i.message for i in issues)
+
+
+def test_index_target_not_bare_flagged():
+    # Ruling 6: a slash-bearing local .md index target used to be silently
+    # discarded and checked by nothing.
+    issues = wl.check_index_targets("| [B](bugs/b1.md) | x |\n| [A](arch.md) | y |")
+    assert [(i.code, i.severity) for i in issues] == [("index-target-not-bare", "error")]
+    assert "bugs/b1.md" in issues[0].message
