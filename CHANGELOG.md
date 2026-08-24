@@ -13,6 +13,18 @@ Conformance follow-ups from port testing (found by a downstream Node port).
   while the checker itself — correctly, per CONFORMANCE ruling 1 — saw one
   line. Byte-verbatim ports were already conforming.
 
+### Added
+
+- `PROTOCOL.md` gains a **Figures** section (proposed from field experience by
+  a downstream adopter): every figure is derive-on-demand (store the
+  procedure, not the value), stored-with-recipe (value + recipe + date — the
+  recipe makes a lone figure falsifiable), or a frozen dated measurement
+  (superseded explicitly by a new measurement, never silently "corrected").
+  Reconcile (protocol and wiki-compact skill) now recomputes recipe-bearing
+  figures — a mismatch is a conflict with the source of truth even when no
+  competing claim exists. "Stale = conflicting, NOT old" is unchanged: age is
+  still not a signal; recomputability is a detection mode for conflict.
+
 ### Changed
 
 - CONFORMANCE ruling 1 wording amended to match intended (and reference)

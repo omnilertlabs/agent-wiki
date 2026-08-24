@@ -100,7 +100,11 @@ genuinely deferred route to the team's work tracker — the wiki holds knowledge
 Trigger: wiki_lint reports `log-size`, or facts have drifted into conflict. Run the
 `wiki-compact` skill (`--dry-run` to preview).
 - **reconcile:** find claims that are SUPERSEDED or IN CONFLICT — within a page and across
-  pages. Stale = conflicting, NOT old (there is no age signal). Arbitrate with `git log`/
+  pages. Stale = conflicting, NOT old (there is no age signal). For a figure stored with a
+  recipe (see Figures), recompute per the recipe: a mismatch is a conflict with the source
+  of truth even with no competing claim; a FROZEN dated measurement is never recomputed
+  into a "correction" — a new measurement supersedes it explicitly or not at all.
+  Arbitrate with `git log`/
   `git blame` recency + verification against code; code-backed wins, else newer; a genuine
   tie with no code anchor is escalated to the user. Resolve via the supersession protocol
   (clean rewrite, `supersede` log op). This is the agentic cross-page contradiction check.
@@ -112,6 +116,24 @@ Dense, structured, token-efficient markdown. Cross-link related pages. Not prose
 Backticked repo-relative paths are validated (dead-code-ref), so write illustrative or
 made-up example paths with `<placeholder>` segments — the linter skips those by design;
 a realistic-looking fake path fires the check from the page that defines it.
+
+## Figures (counts, sizes, timings, versions, line numbers)
+A figure differs from a claim: it can be RE-DERIVED, which gives it a staleness signal
+claims lack — recompute and compare. State every figure as one of three kinds:
+- **Derive-on-demand** — store the procedure, not the value, when derivation is cheap
+  (a command, a query, a script). Most figure drift comes from storing what could be derived.
+- **Stored with recipe** — value + derivation recipe + date, kept together. The recipe makes
+  a lone figure falsifiable: reconcile may recompute it, and a mismatch is a CONFLICT with
+  the source of truth even when no competing claim exists. (The backticked-path convention
+  generalized: a stored reference carries its own checkability.) A bare figure with no
+  recipe is unverifiable — treat it as an ordinary claim.
+- **Frozen measurement** — a dated record of a past event ("measured N on DATE with
+  INPUTS"). Recomputing produces a NEW measurement that may supersede it explicitly; it
+  never silently "corrects" the old one. Reference results (below) are the live-page
+  instance; superseded measurement trails belong in a history page.
+"Stale = conflicting, NOT old" stands: age is still not a signal. Recomputability is how a
+figure's conflict is DETECTED — including the self-consistent table that agrees with itself
+and disagrees with the world.
 
 ## Reproducible procedures (configs, runs, benchmarks)
 When a page documents something an agent will RE-RUN (env vars, CLI flags, per-dataset inputs,

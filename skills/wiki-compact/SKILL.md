@@ -29,7 +29,11 @@ the defect — fix the live page.
 2. Find claims that conflict or are superseded — WITHIN each page, and ACROSS pages. Use
    cross-links to choose which page-pairs to compare; don't naively compare every pair.
    Skip history pages as EDIT targets (above); a live-vs-history disagreement is expected and
-   is not a conflict.
+   is not a conflict. For a figure stored with a recipe (PROTOCOL.md, Figures), recompute
+   per the recipe — a mismatch is a conflict with the source of truth even when no competing
+   claim exists. A FROZEN dated measurement ("measured N on DATE ...") is a record, not a
+   present-state assertion: never recompute it into a "correction"; a new measurement
+   supersedes it explicitly or the old one stands.
 3. Arbitrate each conflict:
    - `git log -p <page>` / `git blame` on the conflicting lines → which claim is newer.
    - Verify both claims against the code / source of truth.
