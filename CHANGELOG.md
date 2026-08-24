@@ -24,6 +24,14 @@ Conformance follow-ups from port testing (found by a downstream Node port).
   figures — a mismatch is a conflict with the source of truth even when no
   competing claim exists. "Stale = conflicting, NOT old" is unchanged: age is
   still not a signal; recomputability is a detection mode for conflict.
+- **Outward address repair** — the one permitted edit on a history page
+  (ruled on a live downstream case): when archive-page frame prose points at a live
+  artifact whose address went stale (moved/renamed/re-keyed, including an
+  alias that still resolves on click but fails search), append a dated route
+  to the SAME artifact beside the original text. Additive only — never delete
+  or reword the original, never re-aim at a different artifact; claims stay
+  frozen. Logged as `ingest`. In PROTOCOL.md and the wiki-compact skill, in
+  parity.
 
 ### Changed
 

@@ -24,6 +24,12 @@ an approach was abandoned, which is what stops someone retrying it. READ them (t
 fastest way to date a conflict and to see whether a claim was already overturned once), but every
 rewrite lands on a LIVE page. If a live page depends on a history page for a CURRENT fact, that is
 the defect — fix the live page.
+ONE additive edit is allowed on a history page (PROTOCOL.md, outward address repair): when its
+frame prose points at a live artifact whose address went stale — moved/renamed/re-keyed,
+including an alias that still resolves on click but no longer matches what the target shows —
+append a dated route to the SAME artifact beside the original text. Never delete or reword the
+original, never re-aim at a different artifact, leave claims about the address untouched. Log as
+`ingest`.
 
 1. Read `index.md`; enumerate declared pages.
 2. Find claims that conflict or are superseded — WITHIN each page, and ACROSS pages. Use

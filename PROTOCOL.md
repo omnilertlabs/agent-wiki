@@ -25,7 +25,15 @@ The wiki is the single source of truth for project/domain knowledge. It lives at
   claims that are no longer true. Rewriting a superseded claim OUT of one destroys the record
   it was created to keep — including the evidence for why an approach was abandoned, which is
   what stops it being retried. Reconcile reads history pages (they are useful for dating a
-  conflict) but never edits them. A live page must never depend on a history page for a
+  conflict) but never edits their CLAIMS. One narrow edit is permitted: **outward address
+  repair.** Frame prose on a history page may point at live artifacts; when such an address
+  goes STALE (moved, renamed, re-keyed — including a live-but-lying alias that still resolves
+  on click while the target now shows different keys and searches find nothing), ANNOTATE it:
+  append a dated route to the SAME artifact beside the original text, e.g.
+  "*(later moved to <tracker> and renumbered — see <live-page>.md)*". Address repair only ADDS
+  a route: never delete or reword the original text, never re-aim at a different artifact, and
+  leave claims about the address ("mapped 1:1 to ...") untouched. Log it as `ingest` (purely
+  additive). A live page must never depend on a history page for a
   CURRENT fact; if reconcile finds one that does, fix the LIVE page.
 - Auto-memory holds thin personal preferences, not git — never domain facts.
 
