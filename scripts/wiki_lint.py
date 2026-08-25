@@ -166,10 +166,12 @@ def check_log_discipline(log_text, label="log.md", check_size=True):
     prev_date = None
     entry_count = 0
     in_comment = False
-    # Lines terminate at LF, with one immediately preceding CR stripped (CRLF).
-    # Other control characters (FF, VT, NEL, LS, PS, ...) have no structural meaning
-    # and may appear inside a subject — do NOT use splitlines(), which breaks on nine
-    # separators and rejected in-spec input (CONFORMANCE.md ruling 1).
+    # Lines terminate at LF or at end-of-input, with one CR immediately preceding the
+    # terminator stripped (CRLF tolerance; an EOF bare CR is also stripped). Other
+    # control characters (a lone CR mid-line, FF, VT, NEL, LS, PS, ...) have no
+    # structural meaning and may appear inside a subject — do NOT use splitlines(),
+    # which breaks on nine separators and rejected in-spec input (CONFORMANCE.md
+    # ruling 1; the caller must read the file byte-preserving for this to hold).
     for n, line in enumerate(log_text.split("\n"), 1):
         line = line.removesuffix("\r")
         stripped = line.strip()
@@ -228,7 +230,11 @@ def lint(wiki_dir, repo_root, memory_file=None):
         return [Issue("error", "missing-wiki",
                       f"wiki directory not found: {wiki_dir}")]
     index_text = (wiki / "index.md").read_text() if (wiki / "index.md").exists() else ""
-    log_text = (wiki / "log.md").read_text() if (wiki / "log.md").exists() else ""
+    # Log files are read byte-preserving (newline=""): the line-termination contract
+    # (CONFORMANCE.md ruling 1) is end-to-end, and Python's default universal-newlines
+    # read turned a lone CR into a line terminator at the CLI while the checker did not.
+    log_path = wiki / "log.md"
+    log_text = log_path.open(newline="").read() if log_path.exists() else ""
     on_disk = find_pages(wiki_dir)
     declared = parse_index(index_text)
 
@@ -248,7 +254,7 @@ def lint(wiki_dir, repo_root, memory_file=None):
     issues += check_log_discipline(log_text, label="log.md", check_size=True)
     archive = wiki / "log-archive.md"
     if archive.exists():
-        issues += check_log_discipline(archive.read_text(),
+        issues += check_log_discipline(archive.open(newline="").read(),
                                        label="log-archive.md", check_size=False)
     if memory_file and Path(memory_file).exists():
         issues += check_memory_thinness(Path(memory_file).read_text())

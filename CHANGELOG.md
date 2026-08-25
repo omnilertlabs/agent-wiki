@@ -1,6 +1,57 @@
 # Changelog
 
-## 0.2.8 — unreleased
+<!-- Merge to main is the release, so version headers carry no dates: a release's date
+     is derivable on demand from git (the merge commit of its version-bump PR, e.g.
+     `git log --merges --oneline -- .claude-plugin/plugin.json`). A stored date can't
+     be known before the merge lands and goes stale if it slips. -->
+
+## 0.2.9
+
+Conformance follow-ups from port testing (found by a downstream Node port).
+
+### Fixed
+
+- **The CLI no longer treats a lone CR as a line terminator.** Log files are
+  now read byte-preserving (`newline=""`); through 0.2.8, Python's default
+  universal-newlines read translated a lone `\r` to `\n` before the checker
+  ran, so the CLI reported one `log-body` error per CR-separated fragment
+  while the checker itself — correctly, per CONFORMANCE ruling 1 — saw one
+  line. Byte-verbatim ports were already conforming.
+
+### Added
+
+- `PROTOCOL.md` gains a **Figures** section (proposed from field experience by
+  a downstream adopter): every figure is derive-on-demand (store the
+  procedure, not the value), stored-with-recipe (value + recipe + date — the
+  recipe makes a lone figure falsifiable), or a frozen dated measurement
+  (superseded explicitly by a new measurement, never silently "corrected").
+  Reconcile (protocol and wiki-compact skill) now recomputes recipe-bearing
+  figures — a mismatch is a conflict with the source of truth even when no
+  competing claim exists. "Stale = conflicting, NOT old" is unchanged: age is
+  still not a signal; recomputability is a detection mode for conflict.
+- **Outward address repair** — the one permitted edit on a history page
+  (ruled on a live downstream case): when archive-page frame prose points at a live
+  artifact whose address went stale (moved/renamed/re-keyed, including an
+  alias that still resolves on click but fails search), append a dated route
+  to the SAME artifact beside the original text. Additive only — never delete
+  or reword the original, never re-aim at a different artifact; claims stay
+  frozen. Logged as `ingest`. In PROTOCOL.md and the wiki-compact skill, in
+  parity.
+
+### Changed
+
+- CONFORMANCE ruling 1 wording amended to match intended (and reference)
+  behavior: a line terminates at LF **or at end-of-input**, and one CR
+  immediately preceding the terminator is stripped — so a final unterminated
+  line ending in a bare CR does not count that CR toward the subject length.
+  The read layer is explicitly inside the contract.
+- Changelog version headers no longer carry dates or "unreleased" markers:
+  merge-is-release means the date is unknowable before landing and stale
+  after slipping (0.2.8 shipped reading "unreleased"). Per this release's own
+  Figures rule, the date is derive-on-demand — the header comment states the
+  git derivation.
+
+## 0.2.8
 
 Linter behavior release: aligns `wiki_lint.py` with the new `CONFORMANCE.md`
 contract written for the ports of the linter to other languages. Some wikis
@@ -54,6 +105,6 @@ first.
 - Documented (no Python behavior change): the 80-char `log-subject` limit is
   measured in Unicode code points, not bytes.
 
-## 0.2.7 — 2026-08-17
+## 0.2.7
 
 Initial public release.

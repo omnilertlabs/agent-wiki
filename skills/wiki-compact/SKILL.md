@@ -24,12 +24,22 @@ an approach was abandoned, which is what stops someone retrying it. READ them (t
 fastest way to date a conflict and to see whether a claim was already overturned once), but every
 rewrite lands on a LIVE page. If a live page depends on a history page for a CURRENT fact, that is
 the defect — fix the live page.
+ONE additive edit is allowed on a history page (PROTOCOL.md, outward address repair): when its
+frame prose points at a live artifact whose address went stale — moved/renamed/re-keyed,
+including an alias that still resolves on click but no longer matches what the target shows —
+append a dated route to the SAME artifact beside the original text. Never delete or reword the
+original, never re-aim at a different artifact, leave claims about the address untouched. Log as
+`ingest`.
 
 1. Read `index.md`; enumerate declared pages.
 2. Find claims that conflict or are superseded — WITHIN each page, and ACROSS pages. Use
    cross-links to choose which page-pairs to compare; don't naively compare every pair.
    Skip history pages as EDIT targets (above); a live-vs-history disagreement is expected and
-   is not a conflict.
+   is not a conflict. For a figure stored with a recipe (PROTOCOL.md, Figures), recompute
+   per the recipe — a mismatch is a conflict with the source of truth even when no competing
+   claim exists. A FROZEN dated measurement ("measured N on DATE ...") is a record, not a
+   present-state assertion: never recompute it into a "correction"; a new measurement
+   supersedes it explicitly or the old one stands.
 3. Arbitrate each conflict:
    - `git log -p <page>` / `git blame` on the conflicting lines → which claim is newer.
    - Verify both claims against the code / source of truth.
