@@ -36,10 +36,13 @@ def extract_code_refs(text):
     for m in _BACKTICK_RE.finditer(text):
         tok = m.group(1).strip()
         path = _LINE_SUFFIX_RE.sub("", tok)
-        # Only repo-relative file paths are checkable. Skip placeholders (<RUN>),
-        # absolute / container paths (/usr/...), home paths (~/...), and inline
-        # commands (anything containing whitespace is not a single file path).
-        if path.startswith(("/", "~")) or "<" in path or ">" in path or " " in path:
+        # Only repo-relative file paths are checkable (CONFORMANCE.md ruling 7). Skip
+        # placeholders (<RUN>), absolute / container paths (/usr/...), home paths (~/...),
+        # anything with a `..` path segment (not canonical repo-relative form; resolving
+        # it against the host made output depend on sibling checkouts), and inline
+        # commands (any whitespace character means it is not a single file path).
+        if (path.startswith(("/", "~")) or "<" in path or ">" in path
+                or re.search(r"\s", path) or ".." in path.split("/")):
             continue
         last = path.split("/")[-1]
         # A dotted symbol (`Type.Method`) also ends in ".Word" but has no "/", so the

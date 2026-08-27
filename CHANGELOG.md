@@ -2,8 +2,41 @@
 
 <!-- Merge to main is the release, so version headers carry no dates: a release's date
      is derivable on demand from git (the merge commit of its version-bump PR, e.g.
-     `git log --merges --oneline -- .claude-plugin/plugin.json`). A stored date can't
-     be known before the merge lands and goes stale if it slips. -->
+     `git log --merges --date=iso-strict --format='%cd %s' -- .claude-plugin/plugin.json`),
+     quoted in UTC — GitHub's merged_at and git's committer-local dates disagree across
+     midnight. A stored date can't be known before the merge lands and goes stale if it
+     slips. -->
+
+## 0.2.10
+
+Ruling-7 (`dead-code-ref`) revision, from a downstream adopter's conformance
+review: the reference diverged from ruling 7's own text in two places, and one
+piece of existing behavior was undocumented. No new checks; a conforming wiki's
+verdicts change only where a page carries out-of-spec tokens.
+
+### Fixed
+
+- **`..` path segments are no longer resolved against the host.** A backticked
+  `../sibling/x.py` (or `docs/../../x.py`) was checked via `repo_root / ref`,
+  which walks out of the repo — so the warning count depended on which sibling
+  checkouts existed on the machine. Any token with a `..` path segment (segment
+  equality, not substring) is now not checkable, like leading `/` and `~`.
+- **Any whitespace character disqualifies a span**, not only a literal space.
+  A tab or CR inside a span was previously checked as one path and produced a
+  false `dead-code-ref`.
+
+### Changed
+
+- CONFORMANCE ruling 7 consolidated: repo-relative means no leading `/` or `~`,
+  no `..` segment, no `<placeholders>`, no whitespace of any kind; resolution is
+  against the working tree relative to the repo root; the `:N` / `:N-M` line
+  suffix is documented as decoration — stripped and never validated (a stale
+  line number is an authoring concern per PROTOCOL's Figures section, not a
+  linter finding); shorthand and pattern notation (`file.ts` for `src/file.ts`,
+  `{a,b}.md`) are named out of scope — out-of-spec notation is fixed in the
+  page, not blessed by the linter.
+- Changelog header: release dates are quoted in UTC (GitHub's `merged_at` and
+  git's committer-local dates disagree across midnight).
 
 ## 0.2.9
 

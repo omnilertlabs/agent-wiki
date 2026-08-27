@@ -76,11 +76,22 @@ nothing.
 ### 7. Code-ref heuristic — scope is deliberate
 `dead-code-ref` inspects **backtick spans only** (anywhere in a page, including
 inside HTML comments), and only tokens that contain `/`, end in an extension,
-and are repo-relative (no leading `/` or `~`, no `<placeholders>`, no
-whitespace). Out of scope by design: dotted symbols (`Type.Method` — needs
-language awareness), bare directory refs (`pkg/dir/`), and un-backticked paths
-in page metadata. Tip: backtick the paths in metadata conventions and they are
-checked for free.
+and are repo-relative: no leading `/` or `~`, no `..` path segment anywhere
+(segment equality — `a/..b/c.py` is checkable, `a/../b/c.py` is not), no
+`<placeholders>`, and no whitespace character of any kind. A trailing `:N` or
+`:N-M` line suffix is decoration — stripped before resolution and never
+validated, not even against the file's line count; a stale line number is an
+authoring concern (PROTOCOL.md, Figures), not a linter finding. Resolution is
+against the working tree, relative to the repo root. Out of scope by design:
+dotted symbols (`Type.Method` — needs language awareness), bare directory refs
+(`pkg/dir/`), un-backticked paths in page metadata, and shorthand or pattern
+notation (`file.ts` standing for `src/file.ts`, `{a,b}.md`) — out-of-spec
+notation is fixed in the page, not blessed by the linter. Tip: backtick the
+paths in metadata conventions and they are checked for free.
+*History:* through 0.2.9 the reference resolved `..` tokens against the host
+filesystem (output depended on which sibling checkouts existed) and tested for
+a literal space only (a tab inside a span produced a false finding). Fixed in
+0.2.10; ports that already skipped both were conforming to the text.
 
 ### 8. Out of core scope
 Recursive wikis (ruling 5); provenance-as-admission (claims without code
