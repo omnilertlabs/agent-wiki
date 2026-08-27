@@ -337,3 +337,56 @@ def test_index_target_not_bare_flagged():
     issues = wl.check_index_targets("| [B](bugs/b1.md) | x |\n| [A](arch.md) | y |")
     assert [(i.code, i.severity) for i in issues] == [("index-target-not-bare", "error")]
     assert "bugs/b1.md" in issues[0].message
+
+
+# --- CONFORMANCE ruling 7 revision (0.2.10) ---
+
+def test_extract_code_refs_skips_dotdot_path_segments():
+    # Ruling 7: a `..` path segment anywhere means not repo-relative — not checkable.
+    # Segment equality, not substring.
+    for text in ("see `../sibling/x.py`", "see `docs/../../x.py`", "see `a/../b/c.py`",
+                 "see `../sibling/x.py:12`"):
+        assert wl.extract_code_refs(text) == [], text
+    assert wl.extract_code_refs("see `a/..b/c.py`") == ["a/..b/c.py"]
+    assert wl.extract_code_refs("see `foo..bar/x.py`") == ["foo..bar/x.py"]
+
+
+def test_check_code_refs_ignores_dotdot_even_when_host_target_exists(tmp_path):
+    # Through 0.2.9 a `../` ref was resolved against the host filesystem, so the
+    # finding set depended on which sibling checkouts existed. With the sibling
+    # PRESENT the old code was silent for the wrong reason; the ref must simply
+    # not be checked, leaving exactly the one genuine dead ref.
+    repo = tmp_path / "repo"
+    wiki = repo / ".claude" / "wiki"
+    wiki.mkdir(parents=True)
+    (tmp_path / "elsewhere").mkdir()
+    (tmp_path / "elsewhere" / "thing.go").write_text("package x")
+    (wiki / "arch.md").write_text("see `../elsewhere/thing.go` and `nope/missing.py`")
+    issues = wl.check_code_refs(str(wiki), {"arch.md"}, str(repo))
+    assert [(i.code, i.severity) for i in issues] == [("dead-code-ref", "warning")]
+    assert "nope/missing.py" in issues[0].message
+
+
+def test_extract_code_refs_skips_any_whitespace_character():
+    # Ruling 7: "no whitespace character of any kind" — the code used to test only
+    # for a literal space, so a tab inside a span was checked as one path.
+    for sep in ("\t", "\r", "\x0b", "\x0c", "\u00a0"):
+        assert wl.extract_code_refs(f"`a/x.py{sep}b/y.py`") == [], repr(sep)
+    # Surrounding whitespace is stripped before the test (existing behavior, pinned).
+    assert wl.extract_code_refs("` a/x.py `") == ["a/x.py"]
+
+
+def test_extract_code_refs_strips_line_range_suffix():
+    assert wl.extract_code_refs("`scripts/wiki_lint.py:42-50`") == ["scripts/wiki_lint.py"]
+
+
+def test_check_code_refs_does_not_validate_line_numbers(tmp_path):
+    # Ruling 7: the :N / :N-M suffix is decoration — never validated, not even
+    # against the file's line count. A stale line number is an authoring concern.
+    repo = tmp_path / "repo"
+    wiki = repo / ".claude" / "wiki"
+    wiki.mkdir(parents=True)
+    (repo / "src").mkdir()
+    (repo / "src" / "real.py").write_text("x = 1\n")
+    (wiki / "arch.md").write_text("see `src/real.py:9999`")
+    assert wl.check_code_refs(str(wiki), {"arch.md"}, str(repo)) == []
