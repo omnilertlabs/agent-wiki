@@ -135,10 +135,22 @@ claims lack — recompute and compare. State every figure as one of three kinds:
   the source of truth even when no competing claim exists. (The backticked-path convention
   generalized: a stored reference carries its own checkability.) A bare figure with no
   recipe is unverifiable — treat it as an ordinary claim.
+  Marker form — the parenthetical immediately after the value:
+  `<value> (recipe: <command>, as of YYYY-MM-DD)`, the command in backticks, e.g.
+  "14 retry codes (recipe: `grep -c RETRYABLE src/<errors-module>.py`, as of 2026-09-04)".
+  A backticked recipe is RUNNABLE by a checker; a prose recipe is descriptive —
+  agent-verifiable during reconcile but skipped by machines. Backticks are the
+  checkability discriminator here as they are for paths.
 - **Frozen measurement** — a dated record of a past event ("measured N on DATE with
   INPUTS"). Recomputing produces a NEW measurement that may supersede it explicitly; it
   never silently "corrects" the old one. Reference results (below) are the live-page
   instance; superseded measurement trails belong in a history page.
+  The sentence shape IS the marker — "measured N on YYYY-MM-DD with `INPUTS`" — and the
+  "measured … on DATE" phrasing (versus a "(recipe: …)" parenthetical) is what
+  distinguishes frozen from stored-with-recipe.
+A derive-on-demand figure has NO marker and no stored value: the backticked command
+stands where the number would. Dates in markers are ISO `YYYY-MM-DD`, ASCII digits;
+quote UTC whenever a timestamp matters.
 "Stale = conflicting, NOT old" stands: age is still not a signal. Recomputability is how a
 figure's conflict is DETECTED — including the self-consistent table that agrees with itself
 and disagrees with the world.
