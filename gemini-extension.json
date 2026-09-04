@@ -1,6 +1,6 @@
 {
   "name": "agent-wiki",
   "description": "Standardized agent-maintained wiki (Ingest/Query/Lint) with a generic linter.",
-  "version": "0.2.10",
+  "version": "0.2.11",
   "contextFileName": "GEMINI.md"
 }

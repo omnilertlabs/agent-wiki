@@ -7,6 +7,20 @@
      midnight. A stored date can't be known before the merge lands and goes stale if it
      slips. -->
 
+## 0.2.11
+
+### Changed
+
+- `PROTOCOL.md` Figures: the marker forms are now pinned, requested by a
+  downstream adopter building a docs-side figure checker on the wiki
+  convention. Stored-with-recipe: `<value> (recipe: <command-in-backticks>,
+  as of YYYY-MM-DD)`; a backticked recipe is runnable, a prose recipe is
+  descriptive (agent-only) — backticks are the checkability discriminator,
+  as for paths. Derive-on-demand has no marker (the backticked command
+  stands where the number would); frozen keeps its sentence shape
+  ("measured N on YYYY-MM-DD with `INPUTS`"), distinguished from
+  stored-with-recipe by phrasing. No linter behavior change.
+
 ## 0.2.10
 
 Ruling-7 (`dead-code-ref`) revision, from a downstream adopter's conformance
