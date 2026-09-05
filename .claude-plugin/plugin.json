@@ -1,7 +1,7 @@
 {
   "name": "agent-wiki",
   "description": "Standardized agent-maintained wiki: Ingest/Query/Lint pattern with a generic linter, skills, and SessionStart routing rules. Keeps agent knowledge in a git-tracked .claude/wiki/ and prevents drift across repos.",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "author": { "name": "Omnilert Labs" },
   "license": "MIT",
   "keywords": ["wiki", "knowledge-base", "agent-memory", "documentation", "lint"]

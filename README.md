@@ -10,7 +10,8 @@ marketplace, so all repos stay on one method with no drift.
 - `wiki_lint.py` — the only script: a generic structural linter (CI-able).
 - `CONFORMANCE.md` — the linter's behavior contract, for ports to other languages.
 - Skills + slash commands: `/wiki-init`, `/wiki-ingest`, `/wiki-query`,
-  `/wiki-lint`, `/wiki-migrate`, `/wiki-compact` (or just ask in plain language).
+  `/wiki-lint`, `/wiki-migrate`, `/wiki-compact`, `/wiki-uninstall` (or just ask in
+  plain language).
 - A SessionStart hook that injects knowledge-routing rules every session.
 
 ## Install — Claude Code (full experience: skills, slash commands, hook)
@@ -45,6 +46,16 @@ Gotchas (these tripped us up, so they're worth stating):
   not pull a newer one. So if the install version didn't move, reload changes nothing.
 - **Without auto-update**, force an upgrade by uninstall + reinstall:
   `/plugin uninstall agent-wiki@omnilert-plugins` then `/plugin install agent-wiki@omnilert-plugins`.
+- **Disabling the plugin does not silence the wiki on its own.** `wiki-init` appends a
+  `## Wiki` section to the repo's CLAUDE.md, and that file is version-controlled — it
+  stays put when the plugin goes away. Since 0.2.12 the appended snippet gates itself on
+  the plugin being active, so an agent ignores `.claude/wiki/` when it isn't. Repos that
+  adopted the plugin earlier keep the old unconditional wording until it is replaced —
+  `/wiki-uninstall` removes it, or copy the current text from
+  `templates/CLAUDE-snippet.md`; `wiki-init` appends and never rewrites.
+- **To remove the plugin from a repo**, run `/wiki-uninstall` (add `--dry-run` to preview).
+  It takes out the CLAUDE.md section and the `.claude/settings.json` entry, and keeps
+  `.claude/wiki/` unless you ask for it to be deleted.
 
 Enable auto-update once via `/plugin` → **Marketplaces** → `omnilert-plugins` → **Enable
 auto-update**, or commit it (see the settings snippet under "Adopt in a repo" / below):
@@ -92,7 +103,7 @@ differs per agent.
 - Existing/drifted wiki: run `/wiki-migrate`.
 
 Preview before committing: append `--dry-run` to any mutating command
-(`/wiki-init`, `/wiki-migrate`, `/wiki-ingest`, `/wiki-compact`) to get a change plan — every file it
+(`/wiki-init`, `/wiki-migrate`, `/wiki-ingest`, `/wiki-compact`, `/wiki-uninstall`) to get a change plan — every file it
 would create or modify — without writing or committing anything.
 
 ## Recovering an overwritten settings.json (pre-v0.2.3)
