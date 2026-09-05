@@ -6,7 +6,7 @@
     {
       "name": "agent-wiki",
       "description": "Standardized agent-maintained wiki (Ingest/Query/Lint).",
-      "version": "0.2.11",
+      "version": "0.2.12",
       "source": "./",
       "author": { "name": "Omnilert Labs" }
     }

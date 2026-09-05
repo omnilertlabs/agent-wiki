@@ -7,6 +7,35 @@
      midnight. A stored date can't be known before the merge lands and goes stale if it
      slips. -->
 
+## 0.2.12
+
+### Added
+
+- `wiki-uninstall` skill and `/wiki-uninstall` command — reverses `wiki-init`.
+  Removes the `## Wiki` section from CLAUDE.md and the `enabledPlugins` entry
+  from `.claude/settings.json`, and reports anything it deliberately left alone
+  (wiki links in history, CI steps calling `wiki_lint.py`). Defaults to
+  *detaching*: `.claude/wiki/` is kept on disk unless full removal is asked for
+  explicitly, since those pages may be the only copy of what they record.
+  Until now the plugin had an install path and no teardown.
+
+### Fixed
+
+- `templates/CLAUDE-snippet.md` now gates its instructions on the plugin being
+  active in the session. The snippet is appended to a repo's CLAUDE.md by
+  `wiki-init` and is version-controlled, so it outlived the plugin: disabling or
+  uninstalling stopped the SessionStart hook but left an unconditional "read
+  `.claude/wiki/index.md` before acting on any task" in force. Agents kept
+  reading and citing the wiki with no way to turn it off short of editing
+  CLAUDE.md by hand — including during the uninstall/reinstall upgrade the
+  README documents, which every upgrade without auto-update goes through. The
+  gate keys on two things an agent can observe for itself: the "AGENT-WIKI
+  ROUTING RULES" notice and the presence of `wiki-*` skills.
+
+  Existing repos keep the old snippet until it is replaced — `wiki-init`
+  appends and never rewrites. `wiki-uninstall` removes it; the current text is
+  in `templates/CLAUDE-snippet.md`.
+
 ## 0.2.11
 
 ### Changed

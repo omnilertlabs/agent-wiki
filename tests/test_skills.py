@@ -8,10 +8,11 @@ def _frontmatter(path):
     assert m, f"{path} missing frontmatter"
     return m.group(1)
 
-def test_all_six_skills_present_with_frontmatter():
+def test_all_skills_present_with_frontmatter():
     dirs = sorted(os.path.basename(os.path.dirname(p))
                   for p in glob.glob(os.path.join(SKILLS, "*", "SKILL.md")))
-    assert dirs == ["wiki-compact", "wiki-ingest", "wiki-init", "wiki-lint", "wiki-migrate", "wiki-query"]
+    assert dirs == ["wiki-compact", "wiki-ingest", "wiki-init", "wiki-lint", "wiki-migrate",
+                    "wiki-query", "wiki-uninstall"]
     for p in glob.glob(os.path.join(SKILLS, "*", "SKILL.md")):
         fm = _frontmatter(p)
         assert "name:" in fm and "description:" in fm
