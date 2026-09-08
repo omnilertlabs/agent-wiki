@@ -28,10 +28,12 @@
   against a narrower one and restrictive against a wider one); one was built
   twice in the field, fixture-proven both times, and withdrawn both times.
   Sweeping for undated frozen figures is a Tier 2 duty.
-- `CONFORMANCE.md` matching contract: two corpus-authoring rules from the
+- `CONFORMANCE.md` matching contract: three checker/corpus rules from the
   same field work — a mutation proof needs a specimen only the check under
-  test can catch, and if (code, severity) cannot distinguish two rules the
-  corpus cannot express one of them.
+  test can catch; if (code, severity) cannot distinguish two rules the corpus
+  cannot express one of them; and a marker-gated stricter rule must inherit
+  whatever fallback makes the base rule safe (a safety property proven on one
+  branch does not transfer to the branch a marker selects).
 
 No linter behavior change.
 

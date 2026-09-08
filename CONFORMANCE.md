@@ -23,6 +23,10 @@ divergences from in-flight Go and Node ports.
 - If `(code, severity)` cannot distinguish two rules, the corpus cannot
   express one of them — split the code rather than keying tests on message
   text (messages are outside the contract).
+- A marker-gated stricter rule must inherit whatever fallback makes the base
+  rule safe: a safety property proven on one branch does not transfer to the
+  branch a marker selects. Check every branch, not the one the comment
+  describes.
 
 ## Rulings
 
