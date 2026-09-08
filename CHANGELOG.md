@@ -7,6 +7,34 @@
      midnight. A stored date can't be known before the merge lands and goes stale if it
      slips. -->
 
+## 0.2.13
+
+### Changed
+
+- `PROTOCOL.md` Figures: four clarifications from field application. (1) The
+  frozen marker is normative in ELEMENTS (verb + ISO date + value co-present
+  in one sentence), not word order. (2) The inputs clause is strongly
+  expected but not load-bearing; backticks within it are optional — frozen is
+  exempt from machine checking, so there is no checkability to discriminate.
+  (3) The pinned parenthetical and the "measured" keyword are the MACHINE
+  tier; prose-bound value/date/command and synonym verbs conform IN
+  SUBSTANCE, and reconcile's never-silently-correct rule follows substance,
+  never vocabulary. (4) The taxonomy is triggered by the figure (the number),
+  never the verb — a qualitative "measured" finding is an ordinary claim.
+- `PROTOCOL.md` Figures: the checker boundary is now stated — explicit versus
+  inferred. The stored-with-recipe parenthetical is mechanically detectable;
+  frozen detection infers "figure" from prose and is Tier 2 by nature. A
+  mechanical frozen-figure checker has no safe scope (any scope is permissive
+  against a narrower one and restrictive against a wider one); one was built
+  twice in the field, fixture-proven both times, and withdrawn both times.
+  Sweeping for undated frozen figures is a Tier 2 duty.
+- `CONFORMANCE.md` matching contract: two corpus-authoring rules from the
+  same field work — a mutation proof needs a specimen only the check under
+  test can catch, and if (code, severity) cannot distinguish two rules the
+  corpus cannot express one of them.
+
+No linter behavior change.
+
 ## 0.2.12
 
 ### Added

@@ -17,6 +17,12 @@ divergences from in-flight Go and Node ports.
   regex failed). Both are conforming.
 - Conformance corpora should encode must-accept / must-reject plus the in-spec
   issue sets, not incidental reference behavior.
+- A mutation proof of a check needs a specimen only THAT check can catch:
+  deleting a token from an input rich in other triggers proves the suite
+  fires, not that the check under test does.
+- If `(code, severity)` cannot distinguish two rules, the corpus cannot
+  express one of them — split the code rather than keying tests on message
+  text (messages are outside the contract).
 
 ## Rulings
 
