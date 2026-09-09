@@ -140,17 +140,41 @@ claims lack — recompute and compare. State every figure as one of three kinds:
   "14 retry codes (recipe: `grep -c RETRYABLE src/<errors-module>.py`, as of 2026-09-04)".
   A backticked recipe is RUNNABLE by a checker; a prose recipe is descriptive —
   agent-verifiable during reconcile but skipped by machines. Backticks are the
-  checkability discriminator here as they are for paths.
+  checkability discriminator here as they are for paths. The parenthetical is likewise
+  the MACHINE tier of the binding: value, date and a backticked command bound in adjacent
+  prose is stored-with-recipe IN SUBSTANCE — agent-verifiable, invisible to checkers
+  (no tool reliably binds elements scattered across sentences). Use the parenthetical
+  when tooling should recompute the figure.
 - **Frozen measurement** — a dated record of a past event ("measured N on DATE with
   INPUTS"). Recomputing produces a NEW measurement that may supersede it explicitly; it
   never silently "corrects" the old one. Reference results (below) are the live-page
   instance; superseded measurement trails belong in a history page.
   The sentence shape IS the marker — "measured N on YYYY-MM-DD with `INPUTS`" — and the
   "measured … on DATE" phrasing (versus a "(recipe: …)" parenthetical) is what
-  distinguishes frozen from stored-with-recipe.
+  distinguishes frozen from stored-with-recipe. The normative ELEMENTS are the verb, an
+  ISO date and the value, co-present in one sentence; word order and connectives are free.
+  "measured" is the machine-tier keyword — another past-measurement verb ("the job took
+  210 ms on 2026-09-04, warm cache") is frozen IN SUBSTANCE and reconcile must protect it
+  the same way: the never-silently-correct rule follows substance, never vocabulary. The
+  inputs clause is strongly expected (it is what makes a future measurement comparable and
+  the record interpretable) but not load-bearing, and backticks within it are optional:
+  frozen is exempt from machine checking, so there is no checkability to discriminate —
+  backtick an input only where it is itself a checkable artifact (a path gets
+  dead-code-ref for free). A sentence that names a recipe is stored-with-recipe, not
+  frozen; the verb element matters only when no recipe is present.
 A derive-on-demand figure has NO marker and no stored value: the backticked command
 stands where the number would. Dates in markers are ISO `YYYY-MM-DD`, ASCII digits;
-quote UTC whenever a timestamp matters.
+quote UTC whenever a timestamp matters. The taxonomy is triggered by the FIGURE — the
+number — never by the verb: a qualitative "measured" finding ("measured, the fallback
+is slower") is an ordinary claim with no marker contract, and a checker must not flag
+date-absence in a sentence that carries no figure.
+Checker boundary — EXPLICIT versus INFERRED: the stored-with-recipe parenthetical is an
+author-typed token, mechanically detectable with no tuning surface. Frozen is classified
+by substance, so detecting it means inferring "is this a figure?" from prose — agentic
+(Tier 2) territory by nature. A mechanical frozen-figure checker has no safe scope: any
+scope it picks is permissive against a narrower one and restrictive against a wider one —
+there is no scope that only ever silences. (Built twice in the field, fixture-proven both
+times, withdrawn both times.) Sweeping for undated frozen figures is a Tier 2 duty.
 "Stale = conflicting, NOT old" stands: age is still not a signal. Recomputability is how a
 figure's conflict is DETECTED — including the self-consistent table that agrees with itself
 and disagrees with the world.
